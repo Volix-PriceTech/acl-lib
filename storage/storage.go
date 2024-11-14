@@ -19,4 +19,5 @@ type Storage interface {
 	AssignPermissionToRole(roleID, permissionID string) error
 	RemovePermissionFromRole(roleID, permissionID string) error
 	GetPermissionsByRole(roleID string) ([]models.Permission, error)
+	MigrateTables() error
 }

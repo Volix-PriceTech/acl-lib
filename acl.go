@@ -13,6 +13,10 @@ func NewACL(s storage.Storage) *ACL {
 	return &ACL{storage: s}
 }
 
+func (a *ACL) Migrate() error {
+	return a.storage.MigrateTables()
+}
+
 func (a *ACL) CreateRole(name string) error {
 	role := &models.Role{Name: name}
 	return a.storage.CreateRole(role)
