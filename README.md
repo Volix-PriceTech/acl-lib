@@ -12,7 +12,7 @@ A simple and flexible Access Control List (ACL) library for Go projects.
 ## Installation
 
 ```bash
-go get github.com/yourusername/acl-library
+go get github.com/Volix-PriceTech/acl-lib
 ```
 
 ## Usage
