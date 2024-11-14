@@ -23,6 +23,10 @@ func NewMockStorage() *MockStorage {
 	}
 }
 
+func (m *MockStorage) MigrateTables() error {
+	return nil
+}
+
 func (m *MockStorage) CreateRole(role *models.Role) error {
 	role.ID = "role_" + role.Name
 	m.roles[role.ID] = role
