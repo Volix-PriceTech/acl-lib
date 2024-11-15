@@ -10,16 +10,16 @@ import (
 )
 
 type MockStorage struct {
-	roles           map[string]*models.Role
-	permissions     map[string]*models.Permission
-	rolePermissions map[string]map[string]bool
+	roles           map[int64]*models.Role
+	permissions     map[int64]*models.Permission
+	rolePermissions map[int64]map[int64]bool
 }
 
 func NewMockStorage() *MockStorage {
 	return &MockStorage{
-		roles:           make(map[string]*models.Role),
-		permissions:     make(map[string]*models.Permission),
-		rolePermissions: make(map[string]map[string]bool),
+		roles:           make(map[int64]*models.Role),
+		permissions:     make(map[int64]*models.Permission),
+		rolePermissions: make(map[int64]map[int64]bool),
 	}
 }
 
@@ -28,12 +28,12 @@ func (m *MockStorage) MigrateTables() error {
 }
 
 func (m *MockStorage) CreateRole(role *models.Role) error {
-	role.ID = "role_" + role.Name
+	role.ID = 1
 	m.roles[role.ID] = role
 	return nil
 }
 
-func (m *MockStorage) GetRoleByID(id string) (*models.Role, error) {
+func (m *MockStorage) GetRoleByID(id int64) (*models.Role, error) {
 	role, exists := m.roles[id]
 	if !exists {
 		return nil, storage.ErrRoleNotFound
@@ -41,18 +41,18 @@ func (m *MockStorage) GetRoleByID(id string) (*models.Role, error) {
 	return role, nil
 }
 
-func (m *MockStorage) DeleteRole(id string) error {
+func (m *MockStorage) DeleteRole(id int64) error {
 	delete(m.roles, id)
 	return nil
 }
 
 func (m *MockStorage) CreatePermission(permission *models.Permission) error {
-	permission.ID = "perm_" + permission.Name
+	permission.ID = 1
 	m.permissions[permission.ID] = permission
 	return nil
 }
 
-func (m *MockStorage) GetPermissionByID(id string) (*models.Permission, error) {
+func (m *MockStorage) GetPermissionByID(id int64) (*models.Permission, error) {
 	permission, exists := m.permissions[id]
 	if !exists {
 		return nil, storage.ErrPermissionNotFound
@@ -60,12 +60,12 @@ func (m *MockStorage) GetPermissionByID(id string) (*models.Permission, error) {
 	return permission, nil
 }
 
-func (m *MockStorage) DeletePermission(id string) error {
+func (m *MockStorage) DeletePermission(id int64) error {
 	delete(m.permissions, id)
 	return nil
 }
 
-func (m *MockStorage) AssignPermissionToRole(roleID, permissionID string) error {
+func (m *MockStorage) AssignPermissionToRole(roleID, permissionID int64) error {
 	if _, exists := m.roles[roleID]; !exists {
 		return storage.ErrRoleNotFound
 	}
@@ -73,20 +73,20 @@ func (m *MockStorage) AssignPermissionToRole(roleID, permissionID string) error 
 		return storage.ErrPermissionNotFound
 	}
 	if m.rolePermissions[roleID] == nil {
-		m.rolePermissions[roleID] = make(map[string]bool)
+		m.rolePermissions[roleID] = make(map[int64]bool)
 	}
 	m.rolePermissions[roleID][permissionID] = true
 	return nil
 }
 
-func (m *MockStorage) RemovePermissionFromRole(roleID, permissionID string) error {
+func (m *MockStorage) RemovePermissionFromRole(roleID, permissionID int64) error {
 	if perms, exists := m.rolePermissions[roleID]; exists {
 		delete(perms, permissionID)
 	}
 	return nil
 }
 
-func (m *MockStorage) GetPermissionsByRole(roleID string) ([]models.Permission, error) {
+func (m *MockStorage) GetPermissionsByRole(roleID int64) ([]models.Permission, error) {
 	var perms []models.Permission
 	if permissionIDs, exists := m.rolePermissions[roleID]; exists {
 		for permID := range permissionIDs {
@@ -105,29 +105,29 @@ func TestACL(t *testing.T) {
 	err := acl.CreateRole("admin")
 	assert.NoError(t, err)
 
-	role, err := acl.GetRoleByID("role_admin")
+	role, err := acl.GetRoleByID(1)
 	assert.NoError(t, err)
 	assert.Equal(t, "admin", role.Name)
 
 	err = acl.CreatePermission("read")
 	assert.NoError(t, err)
 
-	permission, err := acl.GetPermissionByID("perm_read")
+	permission, err := acl.GetPermissionByID(1)
 	assert.NoError(t, err)
 	assert.Equal(t, "read", permission.Name)
 
-	err = acl.AssignPermission("role_admin", "perm_read")
+	err = acl.AssignPermission(1, 1)
 	assert.NoError(t, err)
 
-	permissions, err := acl.GetPermissionsByRole("role_admin")
+	permissions, err := acl.GetPermissionsByRole(1)
 	assert.NoError(t, err)
 	assert.Len(t, permissions, 1)
 	assert.Equal(t, "read", permissions[0].Name)
 
-	err = acl.RemovePermission("role_admin", "perm_read")
+	err = acl.RemovePermission(1, 1)
 	assert.NoError(t, err)
 
-	permissions, err = acl.GetPermissionsByRole("role_admin")
+	permissions, err = acl.GetPermissionsByRole(1)
 	assert.NoError(t, err)
 	assert.Len(t, permissions, 0)
 }

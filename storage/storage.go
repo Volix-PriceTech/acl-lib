@@ -11,13 +11,13 @@ var ErrPermissionNotFound = errors.New("permission not found")
 
 type Storage interface {
 	CreateRole(role *models.Role) error
-	GetRoleByID(id string) (*models.Role, error)
-	DeleteRole(id string) error
+	GetRoleByID(id int64) (*models.Role, error)
+	DeleteRole(id int64) error
 	CreatePermission(permission *models.Permission) error
-	GetPermissionByID(id string) (*models.Permission, error)
-	DeletePermission(id string) error
-	AssignPermissionToRole(roleID, permissionID string) error
-	RemovePermissionFromRole(roleID, permissionID string) error
-	GetPermissionsByRole(roleID string) ([]models.Permission, error)
+	GetPermissionByID(id int64) (*models.Permission, error)
+	DeletePermission(id int64) error
+	AssignPermissionToRole(roleID, permissionID int64) error
+	RemovePermissionFromRole(roleID, permissionID int64) error
+	GetPermissionsByRole(roleID int64) ([]models.Permission, error)
 	MigrateTables() error
 }

@@ -9,10 +9,10 @@ import (
 
 func TestPermission(t *testing.T) {
 	permission := &models.Permission{
-		ID:   "perm_edit",
+		ID:   1,
 		Name: "edit",
 	}
 
-	assert.Equal(t, "perm_edit", permission.ID)
+	assert.Equal(t, int64(1), permission.ID)
 	assert.Equal(t, "edit", permission.Name)
 }

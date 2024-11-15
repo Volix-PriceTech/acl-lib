@@ -1,6 +1,6 @@
 package models
 
 type RolePermission struct {
-	RoleID       string `json:"role_id"`
-	PermissionID string `json:"permission_id"`
+	RoleID       int64 `json:"role_id"`
+	PermissionID int64 `json:"permission_id"`
 }

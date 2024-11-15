@@ -22,11 +22,11 @@ func (a *ACL) CreateRole(name string) error {
 	return a.storage.CreateRole(role)
 }
 
-func (a *ACL) GetRoleByID(id string) (*models.Role, error) {
+func (a *ACL) GetRoleByID(id int64) (*models.Role, error) {
 	return a.storage.GetRoleByID(id)
 }
 
-func (a *ACL) DeleteRole(id string) error {
+func (a *ACL) DeleteRole(id int64) error {
 	return a.storage.DeleteRole(id)
 }
 
@@ -35,22 +35,22 @@ func (a *ACL) CreatePermission(name string) error {
 	return a.storage.CreatePermission(permission)
 }
 
-func (a *ACL) GetPermissionByID(id string) (*models.Permission, error) {
+func (a *ACL) GetPermissionByID(id int64) (*models.Permission, error) {
 	return a.storage.GetPermissionByID(id)
 }
 
-func (a *ACL) DeletePermission(id string) error {
+func (a *ACL) DeletePermission(id int64) error {
 	return a.storage.DeletePermission(id)
 }
 
-func (a *ACL) AssignPermission(roleID, permissionID string) error {
+func (a *ACL) AssignPermission(roleID, permissionID int64) error {
 	return a.storage.AssignPermissionToRole(roleID, permissionID)
 }
 
-func (a *ACL) RemovePermission(roleID, permissionID string) error {
+func (a *ACL) RemovePermission(roleID, permissionID int64) error {
 	return a.storage.RemovePermissionFromRole(roleID, permissionID)
 }
 
-func (a *ACL) GetPermissionsByRole(roleID string) ([]models.Permission, error) {
+func (a *ACL) GetPermissionsByRole(roleID int64) ([]models.Permission, error) {
 	return a.storage.GetPermissionsByRole(roleID)
 }

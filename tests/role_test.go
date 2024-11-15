@@ -9,10 +9,10 @@ import (
 
 func TestRole(t *testing.T) {
 	role := &models.Role{
-		ID:   "role_user",
+		ID:   1,
 		Name: "user",
 	}
 
-	assert.Equal(t, "role_user", role.ID)
+	assert.Equal(t, int64(1), role.ID)
 	assert.Equal(t, "user", role.Name)
 }

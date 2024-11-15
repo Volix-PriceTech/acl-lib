@@ -55,7 +55,7 @@ func (m *MySQLStorage) CreateRole(role *models.Role) error {
 	return err
 }
 
-func (m *MySQLStorage) GetRoleByID(id string) (*models.Role, error) {
+func (m *MySQLStorage) GetRoleByID(id int64) (*models.Role, error) {
 	query := "SELECT id, name FROM roles WHERE id = ?"
 	row := m.db.QueryRow(query, id)
 
@@ -69,7 +69,7 @@ func (m *MySQLStorage) GetRoleByID(id string) (*models.Role, error) {
 	return &role, nil
 }
 
-func (m *MySQLStorage) DeleteRole(id string) error {
+func (m *MySQLStorage) DeleteRole(id int64) error {
 	query := "DELETE FROM roles WHERE id = ?"
 	result, err := m.db.Exec(query, id)
 	if err != nil {
@@ -88,7 +88,7 @@ func (m *MySQLStorage) CreatePermission(permission *models.Permission) error {
 	return err
 }
 
-func (m *MySQLStorage) GetPermissionByID(id string) (*models.Permission, error) {
+func (m *MySQLStorage) GetPermissionByID(id int64) (*models.Permission, error) {
 	query := "SELECT id, name FROM permissions WHERE id = ?"
 	row := m.db.QueryRow(query, id)
 
@@ -102,7 +102,7 @@ func (m *MySQLStorage) GetPermissionByID(id string) (*models.Permission, error) 
 	return &permission, nil
 }
 
-func (m *MySQLStorage) DeletePermission(id string) error {
+func (m *MySQLStorage) DeletePermission(id int64) error {
 	query := "DELETE FROM permissions WHERE id = ?"
 	result, err := m.db.Exec(query, id)
 	if err != nil {
@@ -115,13 +115,13 @@ func (m *MySQLStorage) DeletePermission(id string) error {
 	return nil
 }
 
-func (m *MySQLStorage) AssignPermissionToRole(roleID, permissionID string) error {
+func (m *MySQLStorage) AssignPermissionToRole(roleID, permissionID int64) error {
 	query := "INSERT INTO role_permissions (role_id, permission_id) VALUES (?, ?)"
 	_, err := m.db.Exec(query, roleID, permissionID)
 	return err
 }
 
-func (m *MySQLStorage) RemovePermissionFromRole(roleID, permissionID string) error {
+func (m *MySQLStorage) RemovePermissionFromRole(roleID, permissionID int64) error {
 	query := "DELETE FROM role_permissions WHERE role_id = ? AND permission_id = ?"
 	result, err := m.db.Exec(query, roleID, permissionID)
 	if err != nil {
@@ -134,7 +134,7 @@ func (m *MySQLStorage) RemovePermissionFromRole(roleID, permissionID string) err
 	return nil
 }
 
-func (m *MySQLStorage) GetPermissionsByRole(roleID string) ([]models.Permission, error) {
+func (m *MySQLStorage) GetPermissionsByRole(roleID int64) ([]models.Permission, error) {
 	query := `
 		SELECT p.id, p.name
 		FROM permissions p
