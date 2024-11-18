@@ -5,7 +5,7 @@ A simple and flexible Access Control List (ACL) library for Go projects.
 ## Features
 
 - Manage roles and permissions
-- Assign permissions to roles
+- Assign permissions to roles and roles to users
 - Database-agnostic storage interface
 - Thread-safe operations
 
