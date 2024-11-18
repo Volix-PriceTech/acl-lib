@@ -39,6 +39,15 @@ func (m *MySQLStorage) MigrateTables() error {
             FOREIGN KEY (permission_id) REFERENCES permissions(id) ON DELETE CASCADE
         );
         `,
+		`
+		CREATE TABLE IF NOT EXISTS user_roles (
+			user_id CHAR(36) NOT NULL,
+			role_id BIGINT NOT NULL,
+		    PRIMARY KEY (user_id, role_id),
+			FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+			FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE,
+		);
+		`,
 	}
 
 	for _, query := range queries {
@@ -159,4 +168,57 @@ func (m *MySQLStorage) GetPermissionsByRole(roleID int64) ([]models.Permission, 
 		return nil, err
 	}
 	return permissions, nil
+}
+
+func (m *MySQLStorage) AssignRoleToUser(roleID int64, userID string) error {
+	query := `
+		INSERT INTO user_roles (user_id, role_id)
+		VALUES (?, ?)
+		ON DUPLICATE KEY UPDATE role_id = VALUES(role_id), updated_at = CURRENT_TIMESTAMP
+	`
+	_, err := m.db.Exec(query, userID, roleID)
+	if err != nil {
+		return fmt.Errorf("AssignRoleToUser: failed to assign role to user: %w", err)
+	}
+	return nil
+}
+
+func (m *MySQLStorage) RemoveRoleFromUser(roleID int64, userID string) error {
+	query := `
+		DELETE FROM user_roles
+		WHERE user_id = ? AND role_id = ?
+	`
+	result, err := m.db.Exec(query, userID, roleID)
+	if err != nil {
+		return fmt.Errorf("RemoveRoleFromUser: failed to remove role from user: %w", err)
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("RemoveRoleFromUser: failed to get rows affected: %w", err)
+	}
+	if rowsAffected == 0 {
+		return errors.New("RemoveRoleFromUser: no such role assigned to user")
+	}
+	return nil
+}
+
+func (m *MySQLStorage) GetRoleByUser(userID string) (*models.Role, error) {
+	query := `
+		SELECT r.id, r.name, r.description, r.created_at, r.updated_at
+		FROM roles r
+		INNER JOIN user_roles ur ON r.id = ur.role_id
+		WHERE ur.user_id = ?
+		LIMIT 1
+	`
+	row := m.db.QueryRow(query, userID)
+
+	var role models.Role
+	err := row.Scan(&role.ID, &role.Name)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrRoleNotFound
+		}
+		return nil, fmt.Errorf("GetRoleByUser: failed to get role for user: %w", err)
+	}
+	return &role, nil
 }
