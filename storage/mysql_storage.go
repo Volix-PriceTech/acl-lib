@@ -31,7 +31,7 @@ func (m *MySQLStorage) MigrateTables() error {
         );
         `,
 		`
-        CREATE TABLE IF NOT EXISTS roles_permissions (
+        CREATE TABLE IF NOT EXISTS role_permissions (
             role_id BIGINT NOT NULL,
             permission_id BIGINT NOT NULL,
             PRIMARY KEY (role_id, permission_id),
@@ -204,7 +204,7 @@ func (m *MySQLStorage) RemoveRoleFromUser(roleID int64, userID string) error {
 
 func (m *MySQLStorage) GetRoleByUser(userID string) (*models.Role, error) {
 	query := `
-		SELECT r.id, r.name, r.description, r.created_at, r.updated_at
+		SELECT r.id, r.name
 		FROM roles r
 		INNER JOIN user_roles ur ON r.id = ur.role_id
 		WHERE ur.user_id = ?
