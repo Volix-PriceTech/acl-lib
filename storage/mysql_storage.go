@@ -40,19 +40,19 @@ func (m *MySQLStorage) MigrateTables() error {
         );
         `,
 		`
-		CREATE TABLE IF NOT EXISTS user_roles (
-			user_id CHAR(36) NOT NULL,
-			role_id BIGINT NOT NULL,
-		    PRIMARY KEY (user_id, role_id),
-			FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-			FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE,
-		);
-		`,
+        CREATE TABLE IF NOT EXISTS user_roles (
+            user_id CHAR(36) NOT NULL,
+            role_id BIGINT NOT NULL,
+            PRIMARY KEY (user_id, role_id),
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+            FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
+        );
+        `,
 	}
 
 	for _, query := range queries {
 		if _, err := m.db.Exec(query); err != nil {
-			return fmt.Errorf("failed to execute migration query: %w", err)
+			return fmt.Errorf("failed to execute migration query:\n%s\nError: %w", query, err)
 		}
 	}
 	return nil
